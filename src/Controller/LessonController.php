@@ -24,12 +24,13 @@ class LessonController extends AbstractController
         ]);
     }
 
-    #[Route('{id}/new/', name: 'app_lesson_new', methods: ['GET', 'POST'])]
+    #[Route('/{id}/new/', name: 'app_lesson_new', methods: ['GET', 'POST'])]
     public function new(Request $request, Course $course, int $id, CourseRepository $courseRepository, EntityManagerInterface $entityManager): Response
-    {
+    { 
         $lesson = new Lesson();
-        $lesson->setCourse($courseRepository->find(['id'=>$id]));
-        $form = $this->createForm(LessonType::class, $lesson, ['course'=>$course,]);
+        $course = $courseRepository->find(['id'=>$id]);
+        $lesson->setCourse($course);
+        $form = $this->createForm(LessonType::class, $lesson);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
