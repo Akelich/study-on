@@ -1,25 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Course index{% endblock %}
+{% block title %}Курсы{% endblock %}
 
 {% block body %}
-    <h1>Курсы</h1>
+<div class="container">
+    <h1 class="fw-bolder">Курсы</h1>
 
     <table class="table">
         
-        <tbody>
-        {% for course in courses %}
-            <tr>
-                <td><a href="{{ path('app_course_show', {'id': course.id}) }}">{{ course.name }}</a></td>
-                <td>{{ course.description }}</td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
+        
+            <div class="row gx-5">
+                {% for course in courses %}
+                <div class="col-md-6">
+                    <div class="card p-1 m-3">
+                        <div class="card-body">
+                            <h3>{{ course.name }}</h3>                       
+                            <p>{{ course.description }}</p>
+                            <a class="btn btn-primary" href="{{ path('app_course_show', {'id': course.id}) }}">
+                                Пройти курс
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            
+                {% else %}
+                    <tr>
+                        <td colspan="5">no records found</td>
+                    </tr>
+                {% endfor %}
+            </div>        
+        </div>    
     </table>
 
-    <a href="{{ path('app_course_new') }}">Create new</a>
+    <a class="btn btn-outline-primary" href="{{ path('app_course_new') }}">Новый курс</a>
 {% endblock %}

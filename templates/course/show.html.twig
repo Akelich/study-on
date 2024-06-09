@@ -1,34 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Course{% endblock %}
+{% block title %}{{ course.name }}{% endblock %}
 
 {% block body %}
     <h1>{{ course.name }}</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>{{ course.description }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <p>{{ course.description }}</p>
+    
     <h4>Уроки:</h4>
     {% for lesson in course.lesson %}
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>{{ lesson.serialNumber }}</td>
-                <td><a href="{{ path('app_lesson_show', {'id': lesson.id}) }}">{{ lesson.name }}</a></td>  
-            </tr>
-        </tbody>
-    </table>
+    
+            <li>
+                {{ lesson.serialNumber }}
+                <a style="text-decoration: none;" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover" href="{{ path('app_lesson_show', {'id': lesson.id}) }}">{{ lesson.name }}</a>  
+            </li>
+    {% else %}
+                    <tr>
+                        <td colspan="5">В этом курсе пока нет уроков</td>
+                    </tr>
+                    
     {% endfor %}
+    <div class="d-grid gap-2 d-md-flex" style="display:flex">
+        <a class="btn btn-outline-secondary mt-3" href="{{ path('app_course_index', {'id': course.id}) }}">Вернуться к списку курсов</a>
 
-    <a href="{{ path('app_course_index', {'id': course.id}) }}">back to list</a>
+        
+        <a class="btn btn-outline-primary mt-3" href="{{ path('app_lesson_new', {'id': course.id}) }}">Добавить урок</a>
+        <a class="btn btn-outline-warning mt-3" href="{{ path('app_course_edit', {'id': course.id}) }}">Редактировать курс</a>
 
-    <a href="{{ path('app_course_edit', {'id': course.id}) }}">edit</a>
-
-    <a href="{{ path('app_lesson_new', {'id': course.id}) }}">Create new</a>
-
-    {{ include('course/_delete_form.html.twig') }}
+        {{ include('course/_delete_form.html.twig') }}
+    </div>
 {% endblock %}
