@@ -6,16 +6,19 @@
     <h1>{{ lesson.name }}</h1>
 
     
-    <a style="text-decoration: none;" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover" href="{{ path('app_lesson_show', {'id': lesson.id}) }}" href="{{ path('app_course_show', {'id': lesson.course.id}) }}">{{ lesson.course.name }}</a>
+    <a style="text-decoration: none;" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover" href="{{ path('app_course_show', {'id': lesson.course.id}) }}">{{ lesson.course.name }}</a>
     
     <div class="d-grid gap-2 d-md-flex" style="display:flex">
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
         <a class="btn btn-outline-warning mt-3" href="{{ path('app_lesson_edit', {'id': lesson.id}) }}">Редактировать</a>
         {{ include('lesson/_delete_form.html.twig') }}
+    {% endif %}
     </div>    
         <div class="border mt-3 p-4 rounded-2">
             {{ lesson.lessonContent }}
         </div>
-        
-    <a class="btn btn-outline-secondary mt-3" href="{{ path('app_course_show', {'id': lesson.course.id}) }}">Вернуться к списку уроков</a>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <a class="btn btn-outline-secondary mt-3" href="{{ path('app_course_show', {'id': lesson.course.id}) }}">Вернуться к списку уроков</a>
+        {% endif %}
 
 {% endblock %}

@@ -18,10 +18,29 @@
     </head>
     <body class='body' style='background-color: white;'>
         <nav class="navbar navbar-expand-lg bg-light navbar-light p-3 rounded-3">
-            <div class="contaner-fluid">
-            <a class="link-secondary link-offset-2 link-underline-opacity-0 fs-3" href={{ path('app_course_index') }}>
-                Study-on
-            </a>
+            <div class="contaner">
+                <div>
+                <a class="link-secondary link-offset-2 link-underline-opacity-0 fs-3" href={{ path('app_course_index') }}>
+                    Study-on
+                </a>
+                </div>
+                <div class="text-right ">            
+                    {% if is_granted('ROLE_USER') %}
+                        <a class="me-2 fs-5" href="{{ path('app_profile') }}">
+                            Профиль
+                        </a>
+                        <a class="me-2 fs-5" href="{{ path('app_logout') }}">
+                        <span class="">Выход</span> 
+                        </a>
+                    {% else %}
+                        <a class="me-2 fs-5" href="{{ path('app_registration') }}">
+                            <span class="">Регистрация</span>
+                        </a>
+                        <a class="me-2 fs-5" href="{{ path('app_login') }}">
+                            <span class="">Войти</span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </nav>
         {% block body %}{% endblock %}

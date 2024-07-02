@@ -31,6 +31,7 @@
             </div>        
         </div>    
     </table>
-
-    <a class="btn btn-outline-primary" href="{{ path('app_course_new') }}">Новый курс</a>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a class="btn btn-outline-primary" href="{{ path('app_course_new') }}">Новый курс</a>
+    {% endif %}
 {% endblock %}

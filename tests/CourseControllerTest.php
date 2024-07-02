@@ -7,6 +7,8 @@ use App\Entity\Course;
 use App\Repository\CourseRepository;
 use App\Tests\AbstractTest;
 use App\DataFixtures\CourseFixtures;
+use App\Service\BillingClient;
+use App\Tests\Mock\MockBillingClient;
 
 
 class CourseControllerTest extends AbstractTest
@@ -19,7 +21,6 @@ class CourseControllerTest extends AbstractTest
     public function urlProviderSuccessful(): \Generator
     {
         yield ['/courses/'];
-        yield ['/courses/new'];
     }
 
     /**
@@ -28,6 +29,12 @@ class CourseControllerTest extends AbstractTest
     public function testPageSuccessful($url): void
     {
         $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
         $client->request('GET', $url);
         $this->assertResponseOk();
     }
@@ -35,13 +42,26 @@ class CourseControllerTest extends AbstractTest
     public function testPageNotFound()
     {
         $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
         $client->request('GET', "/nopage/");
         $this->assertResponseNotFound();
     }
 
     public function testGetPostActionsResponseOk(): void
     {
-        $client = $this->createTestClient();
+        $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
+
         $courses = $this->getEntityManager()->getRepository(Course::class)->findAll();
         foreach ($courses as $course) 
         {           
@@ -49,20 +69,38 @@ class CourseControllerTest extends AbstractTest
             $this->assertResponseOk();
 
             $client->request('GET', "/courses/{$course->getId()}/edit");
-            $this->assertResponseOk();
+            $this->assertResponseRedirect();
 
             $client->request('POST', "/courses/{$course->getId()}");
             $this->assertResponseRedirect();
 
             $client->request('POST', "/courses/{$course->getId()}/edit");
-            $this->assertResponseOk();
+            $this->assertResponseRedirect();
         }
     }
 
     public function testSuccessCourseCreating(): void
     {
-        // список курсов
-        $client = $this->createTestClient();
+        $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
+
+        $crawler = $client->request('GET', '/login');
+        $this->assertResponseOk();
+
+        $form = $crawler->selectButton('Войти')->form([
+            'email' => 'admin@mail.ru',
+            'password' => 'password'
+        ]);
+
+        $client->submit($form);
+
+        //dd($client->getKernel()->getContainer()->get('security.token_storage'));
+
         $countAfter = count($this->getEntityManager()->getRepository(Course::class)->findAll());
         $crawler = $client->request('GET', '/courses/');
         $this->assertResponseOk();
@@ -102,7 +140,22 @@ class CourseControllerTest extends AbstractTest
     public function testFailCourseCreating(): void
     {
         // список курсов
-        $client = $this->createTestClient();
+        $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
+
+        $crawler = $client->request('GET', '/login');
+        $this->assertResponseOk();
+
+        $form = $crawler->selectButton('Войти')->form([
+            'email' => 'user@mail.ru',
+            'password' => 'password'
+        ]);
+
         $crawler = $client->request('GET', '/courses/');
         $this->assertResponseOk();
 
@@ -166,7 +219,22 @@ class CourseControllerTest extends AbstractTest
     public function testCourseEdit(): void
     {
         // список курсов
-        $client = $this->createTestClient();
+        $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
+
+        $crawler = $client->request('GET', '/login');
+        $this->assertResponseOk();
+
+        $form = $crawler->selectButton('Войти')->form([
+            'email' => 'user@mail.ru',
+            'password' => 'password'
+        ]);
+
         $crawler = $client->request('GET', '/courses/');  
         $this->assertResponseOk();
 
@@ -199,7 +267,22 @@ class CourseControllerTest extends AbstractTest
     }
 
     public function testDeleteCourse(){
-        $client = $this->getClient();
+        $client = static::createTestClient();
+        $client->disableReboot();
+
+        $client->getContainer()->set(
+            BillingClient::class,
+            new MockBillingClient()
+        );
+
+        $crawler = $client->request('GET', '/login');
+        $this->assertResponseOk();
+
+        $form = $crawler->selectButton('Войти')->form([
+            'email' => 'user@mail.ru',
+            'password' => 'password'
+        ]);
+
         $crawler = $this->getClient()->request('GET', '/courses/');
         $countBefore = count($this->getEntityManager()->getRepository(Course::class)->findAll());
         $this->assertResponseOk();
